@@ -432,11 +432,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       });
       var loginState = ref.watch(loginControllerProvider);
 
-      if (loginState is LoginFailure && context.mounted) {
+      if (loginState is LoginFailure && mounted) {
         final snackBar = SnackBar(
           content: Text(loginState.error),
           duration: const Duration(seconds: 3),
         );
+
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }

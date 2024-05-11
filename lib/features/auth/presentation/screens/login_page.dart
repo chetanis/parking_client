@@ -158,7 +158,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() {
         isApiCallProcess = true;
       });
-      print('trying to login');
       await ref
           .read(loginControllerProvider.notifier)
           .login(emailController.text, passwordController.text);
@@ -166,8 +165,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() {
         isApiCallProcess = false;
       });
-      print('loginState: $loginState');
-      if (loginState is LoginFailure && context.mounted) {
+      if (loginState is LoginFailure && mounted) {
         final snackBar = SnackBar(
           content: Text(loginState.error),
           duration: const Duration(seconds: 3),
