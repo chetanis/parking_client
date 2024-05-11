@@ -9,23 +9,23 @@ class LoginController extends StateNotifier<LoginState>{
   }
   final Ref ref;
 
-  void login(String email,String password) async {
+  Future<void> login(String email,String password) async {
     state = const LoginLoading();
     try {
       await ref.read(authRepositoryProvider).login(email, password);
       state = const LoginSuccess();
     } catch (e) {
-      state = LoginFailure(e.toString(), 'login');
+      state = LoginFailure(e.toString());
     }
   }
 
-  void register(String email, String password, String lastName, String name, String phone, String carModel, String mat, String vf) async {
+  Future<void> register(String email, String password, String lastName, String name, String phone, String carModel, String mat, String vf) async {
     state = const LoginLoading();
     try {
       await ref.read(authRepositoryProvider).register(email, password, lastName, name, phone, carModel, mat, vf);
       state = const LoginSuccess();
     } catch (e) {
-      state = LoginFailure(e.toString(), 'register');
+      state = LoginFailure(e.toString());
     }
   }
   

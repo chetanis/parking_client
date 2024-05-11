@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:parking_client/features/auth/presentation/widgets/progress_hud.dart';
 import 'package:parking_client/features/auth/providers/login_controller_provider.dart';
 import 'package:parking_client/features/auth/providers/states/login_state.dart';
 
@@ -21,8 +22,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final loginState = ref.watch(loginControllerProvider);
+    return ProgressHUD(
+      isLoading: isApiCallProcess,
+      child: _buildLoginPage(context),
+    );
+  }
 
+  Widget _buildLoginPage(BuildContext context) {
     return Scaffold(
         key: scaffoldKey,
         body: Center(
@@ -102,14 +108,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       .cardColor
                                       .withOpacity(0.4),
                                 )))),
-                    if (loginState is LoginFailure)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Text(
-                          "Login Failed: ${loginState.error}",
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      ), // Display error message when login fails
                     const SizedBox(height: 30),
                     TextButton(
                       onPressed: () {
@@ -155,11 +153,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return false;
   }
 
-  void _handleLogin() {
+  void _handleLogin() async{
     if (validateAndSave()) {
-      ref
+      setState(() {
+        isApiCallProcess = true;
+      });
+      print('trying to login');
+      await ref
           .read(loginControllerProvider.notifier)
           .login(emailController.text, passwordController.text);
+      var loginState = ref.watch(loginControllerProvider);
+      setState(() {
+        isApiCallProcess = false;
+      });
+      print('loginState: $loginState');
+      if (loginState is LoginFailure && context.mounted) {
+        final snackBar = SnackBar(
+          content: Text(loginState.error),
+          duration: const Duration(seconds: 3),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:parking_client/features/auth/presentation/widgets/progress_hud.dart';
 import 'package:parking_client/features/auth/providers/login_controller_provider.dart';
 import 'package:parking_client/features/auth/providers/states/login_state.dart';
 
@@ -29,7 +30,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final loginState = ref.watch(loginControllerProvider);
+    return ProgressHUD(
+      isLoading: isApiCallProcess,
+      child: _buildREgisterPage(context),
+    );
+  }
+  Widget _buildREgisterPage(BuildContext context) {
     return Scaffold(
         key: scaffoldKey,
         body: SingleChildScrollView(
@@ -262,14 +268,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           color: Theme.of(context).cardColor,
                         )),
                       )),
-                  if (loginState is LoginFailure)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Text(
-                          "Register Failed: ${loginState.error}",
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      ), // Display error message when login fails
                   const SizedBox(height: 25),
                   Center(
                     child: TextButton(
@@ -415,9 +413,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     return false;
   }
 
-  void _handleRegister() {
+  void _handleRegister() async{
     if (validateAndSave()) {
-      ref.read(loginControllerProvider.notifier).register(
+      setState(() {
+        isApiCallProcess = true;
+      });
+      await ref.read(loginControllerProvider.notifier).register(
           emailController.text,
           passwordController.text,
           lastNameController.text,
@@ -426,7 +427,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           carModelController.text,
           matController.text,
           vfController.text);
-      
+      setState(() {
+        isApiCallProcess = false;
+      });
+      var loginState = ref.watch(loginControllerProvider);
+
+      if (loginState is LoginFailure && context.mounted) {
+        final snackBar = SnackBar(
+          content: Text(loginState.error),
+          duration: const Duration(seconds: 3),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
 }
