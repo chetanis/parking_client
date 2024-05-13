@@ -4,10 +4,9 @@ import 'package:parking_client/features/cars/data/repositories/car_repository.da
 import 'package:parking_client/features/cars/providers/states/car_state.dart';
 
 class CarController extends StateNotifier<CarState> {
-  Ref ref;
-
   CarController(this.ref) : super(const CarInitial());
 
+  Ref ref;
 
   Future<void> getCarDetail(List<String> carIds) async {
     state = const CarLoading();
