@@ -5,6 +5,7 @@ import 'package:parking_client/features/auth/presentation/screens/login_page.dar
 import 'package:parking_client/features/auth/presentation/screens/register_page.dart';
 import 'package:parking_client/features/auth/providers/login_controller_provider.dart';
 import 'package:parking_client/features/auth/providers/states/login_state.dart';
+import 'package:parking_client/features/profile/presenetation/screens/profile_page.dart';
 import 'package:parking_client/features/scanner/presentaion/screens/home_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -45,14 +46,18 @@ class RouterNotifier extends ChangeNotifier {
       path: '/register',
       name: 'register',
       builder: (context, state) => const RegisterPage(),
-    )
+    ),
+    GoRoute(
+      name: 'profile',
+      path: '/profile',
+      builder: (context, state) => const UserProfilePage(),
+    ),
   ];
 
   String? _redirectLogic(GoRouterState state) {
     final loginState = ref.read(loginControllerProvider);
     final isLoginPage = state.uri.path == '/login';
     final isRegisterPage = state.uri.path == '/register';
-    final isHomePage = state.uri.path == '/';
 
 
 
@@ -60,10 +65,6 @@ class RouterNotifier extends ChangeNotifier {
       return isLoginPage||isRegisterPage ? null : '/login'; // Redirect to login if not on the login page
     } 
     
-    if (loginState is LoginSuccess) {
-      return isHomePage ? null:'/'; // Redirect to home if on the login page and logged in
-    }
-
     if (loginState is LoginLoading) {
       return null; // Redirect to loading page if login is loading
     }
@@ -71,6 +72,8 @@ class RouterNotifier extends ChangeNotifier {
     if (loginState is LoginFailure) {
       return null; // Default: no redirection
     }
+
+    if (isLoginPage || isRegisterPage) return '/';
 
 
 

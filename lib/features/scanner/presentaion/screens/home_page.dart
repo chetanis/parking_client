@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:parking_client/features/cars/data/models/car.dart';
 import 'package:parking_client/features/cars/providers/car_controller.dart';
 import 'package:parking_client/features/cars/providers/states/car_state.dart';
@@ -93,10 +94,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   shape: const CircleBorder(),
                 ),
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => const UserProfilePage()),
-                  // );
+                  context.push('/profile');
                 },
                 child: const Icon(
                   Icons.person,
